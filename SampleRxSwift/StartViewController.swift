@@ -8,15 +8,20 @@
 
 import UIKit
 import RxSwift
+import RxCocoa
+import RxBlocking
 
 class StartViewController: UIViewController {
     @IBOutlet weak var textField: UITextField!
     @IBOutlet weak var label: UILabel!
+    
+    let bag       = DisposeBag()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // calc()
+        simpleUi()
         
     }
 
@@ -44,6 +49,7 @@ class StartViewController: UIViewController {
             //.map { WolframAlphaIsPrime($0.toInt() ?? 0) }       // type is Observable<Observable<Prime>>
             //.concat()                                           // type is Observable<Prime>
             //.map { "number \($0.n) is prime? \($0.isPrime)" }   // type is Observable<String>
+            .map { "number \(Int($0) ?? 0)" }
             .bindTo(label.rx_text)                        // return Disposable that can be used to unbind everything
         
         // This will set resultLabel.text to "number 43 is prime? true" after
@@ -53,7 +59,7 @@ class StartViewController: UIViewController {
         // ...
         
         // to unbind everything, just call
-        subscription.dispose()
+        subscription.addDisposableTo(self.bag)
     }
 }
 
